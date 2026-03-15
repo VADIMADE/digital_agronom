@@ -1,0 +1,47 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Plant {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?
+  light       String
+  watering    String
+  humidity    String
+}
+
+model Symptom {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?
+  
+  // Добавляем обратную связь к Rule
+  rules       Rule[]
+}
+
+model Diagnosis {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?
+  treatment   String?
+  
+  // Добавляем обратную связь к Rule
+  rules       Rule[]
+}
+
+model Rule {
+  id          String   @id @default(cuid())
+  symptomId   String
+  diagnosisId String
+  weight      Int
+
+  symptom     Symptom   @relation(fields: [symptomId], references: [id])
+  diagnosis   Diagnosis @relation(fields: [diagnosisId], references: [id])
+
+  @@unique([symptomId, diagnosisId])
+}
